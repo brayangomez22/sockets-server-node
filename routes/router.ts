@@ -1,8 +1,45 @@
 import { Router, Request, Response } from 'express';
 import Server from '../classes/server';
 import { usersOnline } from '../sockets/socket';
+import { GraphData } from '../classes/graph';
+import { GraphBarData } from '../classes/graph-bar';
 
 const router = Router();
+
+const graph = new GraphData();
+const graphBar = new GraphBarData();
+
+router.get('/graph-bar', (req: Request, res: Response) => {
+	res.json(graphBar.getGraphBarData());
+});
+
+router.post('/graph-bar', (req: Request, res: Response) => {
+	const option = req.body.option;
+	const units = Number(req.body.units);
+
+	graphBar.increaseValueGraphBar(option, units);
+
+	const server = Server.instance;
+	server.io.emit('graphic-bar-change', graphBar.getGraphBarData());
+
+	res.json(graphBar.getGraphBarData());
+});
+
+router.get('/graph', (req: Request, res: Response) => {
+	res.json(graph.getGraphData());
+});
+
+router.post('/graph', (req: Request, res: Response) => {
+	const label = req.body.label;
+	const units = Number(req.body.units);
+
+	graph.increaseValue(label, units);
+
+	const server = Server.instance;
+	server.io.emit('graphic-change', graph.getGraphData());
+
+	res.json(graph.getGraphData());
+});
 
 router.get('/messages', (req: Request, res: Response) => {
 	res.json({
