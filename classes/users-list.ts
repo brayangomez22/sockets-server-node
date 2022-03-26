@@ -20,7 +20,7 @@ export class UsersList {
 	}
 
 	public getUsersList() {
-		return this.getUsersList;
+		return this.usersList.filter((user) => user.name !== 'no-name');
 	}
 
 	public getUser(id: string) {

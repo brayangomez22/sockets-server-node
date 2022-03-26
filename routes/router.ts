@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import Server from '../classes/server';
+import { usersOnline } from '../sockets/socket';
 
 const router = Router();
 
@@ -56,6 +57,32 @@ router.get('/messages/:id', (req: Request, res: Response) => {
 	res.json({
 		ok: true,
 		id,
+	});
+});
+
+router.get('/users', (req: Request, res: Response) => {
+	const server = Server.instance;
+
+	server.io
+		.allSockets()
+		.then((clients) => {
+			res.json({
+				ok: true,
+				clients: Array.from(clients),
+			});
+		})
+		.catch((err) => {
+			res.json({
+				ok: false,
+				err,
+			});
+		});
+});
+
+router.get('/users/detail', (req: Request, res: Response) => {
+	res.json({
+		ok: true,
+		clients: usersOnline.getUsersList(),
 	});
 });
 

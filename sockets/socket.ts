@@ -10,24 +10,28 @@ export const connectClient = (client: Socket) => {
 	usersOnline.addUser(user);
 };
 
-export const disconnect = (client: Socket) => {
+export const disconnect = (client: Socket, io: socketIO.Server) => {
 	client.on('disconnect', () => {
 		usersOnline.deleteUser(client.id);
+		io.emit('online-users', usersOnline.getUsersList());
 	});
 };
 
 export const message = (client: Socket, io: socketIO.Server) => {
-	client.on('message', (payload: { from: string; message: string }) => {
-		io.emit('new-message', payload);
-	});
+	client.on('message', (payload: { from: string; message: string }) => io.emit('new-message', payload));
 };
 
 export const login = (client: Socket, io: socketIO.Server) => {
 	client.on('login', (payload: { name: string }, callback: Function) => {
 		usersOnline.updateNameUser(client.id, payload.name);
+		io.emit('online-users', usersOnline.getUsersList());
 		callback({
 			ok: true,
 			msg: `The user with the name: ${payload.name} was configured successfully`,
 		});
 	});
+};
+
+export const sendOnlineUsers = (client: Socket, io: socketIO.Server) => {
+	client.on('get-online-users', () => io.to(client.id).emit('online-users', usersOnline.getUsersList()));
 };
