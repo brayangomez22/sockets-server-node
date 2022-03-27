@@ -1,11 +1,17 @@
 import { Router, Request, Response } from 'express';
 import Server from '../classes/server';
-import { usersOnline } from '../sockets/socket';
+import { map, usersOnline } from '../sockets/socket';
 import { GraphData } from '../classes/graph';
 import { GraphBarData } from '../classes/graph-bar';
 
 const router = Router();
 
+// MAP
+router.get('/map', (req: Request, res: Response) => {
+	res.json(map.getMarkers());
+});
+
+// GRAPHS
 const graph = new GraphData();
 const graphBar = new GraphBarData();
 
@@ -41,6 +47,7 @@ router.post('/graph', (req: Request, res: Response) => {
 	res.json(graph.getGraphData());
 });
 
+// CHAT
 router.get('/messages', (req: Request, res: Response) => {
 	res.json({
 		ok: true,

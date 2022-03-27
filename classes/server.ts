@@ -29,6 +29,7 @@ export default class Server {
 	private listenSockets() {
 		this.io.on('connection', (client) => {
 			socket.connectClient(client);
+			socket.mapSockets(client);
 			socket.sendOnlineUsers(client, this.io);
 			socket.login(client, this.io);
 			socket.message(client, this.io);

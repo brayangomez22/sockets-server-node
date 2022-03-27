@@ -2,7 +2,10 @@ import { Socket } from 'socket.io';
 import socketIO from 'socket.io';
 import { UsersList } from '../classes/users-list';
 import { User } from '../classes/user';
+import { Map } from '../classes/map';
+import { Marker } from '../classes/marker';
 
+// CHAT
 export const usersOnline = new UsersList();
 
 export const connectClient = (client: Socket) => {
@@ -34,4 +37,24 @@ export const login = (client: Socket, io: socketIO.Server) => {
 
 export const sendOnlineUsers = (client: Socket, io: socketIO.Server) => {
 	client.on('get-online-users', () => io.to(client.id).emit('online-users', usersOnline.getUsersList()));
+};
+
+// MAP
+export const map = new Map();
+
+export const mapSockets = (client: Socket) => {
+	client.on('new-marker', (marker: Marker) => {
+		map.addMarker(marker);
+		client.broadcast.emit('new-marker', marker);
+	});
+
+	client.on('delete-marker', (id: string) => {
+		map.deleteMarker(id);
+		client.broadcast.emit('delete-marker', id);
+	});
+
+	client.on('move-marker', (payload: Marker) => {
+		map.moveMarker(payload);
+		client.broadcast.emit('move-marker', payload);
+	});
 };

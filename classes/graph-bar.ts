@@ -1,5 +1,5 @@
 export class GraphBarData {
-	private labels: string[] = ['question one', 'question two', 'question three', 'question four'];
+	private labels: string[] = ['Question one', 'Question two', 'Question three', 'Question four'];
 	private data: number[] = [0, 0, 0, 0];
 	private label = 'Questions';
 
